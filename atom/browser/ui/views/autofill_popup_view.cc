@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "chrome/browser/platform_util.h"
 #include "content/public/browser/render_view_host.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
@@ -59,16 +60,14 @@ void AutofillPopupView::Show() {
   if (!popup_)
     return;
 
+#if defined(OS_MACOSX)
+  if (!platform_util::GetTopLevel(parent_widget_->GetNativeView()))
+    return;
+#endif
+
   const bool initialize_widget = !GetWidget();
   if (initialize_widget) {
     parent_widget_->AddObserver(this);
-    views::FocusManager* focus_manager = parent_widget_->GetFocusManager();
-    focus_manager->RegisterAccelerator(
-        ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE),
-        ui::AcceleratorManager::kNormalPriority, this);
-    focus_manager->RegisterAccelerator(
-        ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE),
-        ui::AcceleratorManager::kNormalPriority, this);
 
     // The widget is destroyed by the corresponding NativeWidget, so we use
     // a weak pointer to hold the reference and don't have to worry about
@@ -487,7 +486,6 @@ void AutofillPopupView::ClearSelection() {
 }
 
 void AutofillPopupView::RemoveObserver() {
-  parent_widget_->GetFocusManager()->UnregisterAccelerators(this);
   parent_widget_->RemoveObserver(this);
   views::WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(this);
 }

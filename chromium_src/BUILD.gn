@@ -39,6 +39,10 @@ static_library("chrome") {
     "//chrome/browser/net/proxy_config_monitor.h",
     "//chrome/browser/net/proxy_service_factory.cc",
     "//chrome/browser/net/proxy_service_factory.h",
+    "//chrome/browser/platform_util.cc",
+    "//chrome/browser/platform_util.h",
+    "//chrome/browser/platform_util_mac.mm",
+    "//chrome/browser/platform_util_win.cc",
     "//chrome/browser/ssl/security_state_tab_helper.cc",
     "//chrome/browser/ssl/security_state_tab_helper.h",
     "//chrome/browser/win/chrome_process_finder.cc",
@@ -64,6 +68,10 @@ static_library("chrome") {
     ]
   }
 
+  if (use_aura) {
+    sources += [ "//chrome/browser/platform_util_aura.cc" ]
+  }
+
   if (enable_desktop_capturer) {
     sources += [
       "//chrome/browser/media/webrtc/desktop_media_list.h",
@@ -78,15 +86,10 @@ static_library("chrome") {
   }
 
   if (enable_color_chooser) {
-    sources += [
-      "//chrome/browser/platform_util.cc",
-      "//chrome/browser/platform_util.h",
-      "//chrome/browser/ui/browser_dialogs.h",
-    ]
+    sources += [ "//chrome/browser/ui/browser_dialogs.h" ]
 
     if (use_aura) {
       sources += [
-        "//chrome/browser/platform_util_aura.cc",
         "//chrome/browser/ui/views/color_chooser_aura.cc",
         "//chrome/browser/ui/views/color_chooser_aura.h",
       ]
